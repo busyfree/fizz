@@ -7,6 +7,7 @@ import "encoding/json"
 type OpenAPI struct {
 	OpenAPI    string                 `json:"openapi" yaml:"openapi"`
 	Info       *Info                  `json:"info" yaml:"info"`
+	BasePath   string                 `json:"basePath,omitempty" yaml:"basePath,omitempty"`
 	Servers    []*Server              `json:"servers,omitempty" yaml:"servers,omitempty"`
 	Paths      Paths                  `json:"paths" yaml:"paths"`
 	Components *Components            `json:"components,omitempty" yaml:"components,omitempty"`

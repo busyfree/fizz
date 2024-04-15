@@ -92,6 +92,12 @@ type SpecGenConfig struct {
 	DefaultTag        string
 }
 
+// SetBasePath uses the given OpenAPI basePath for the
+// current specification.
+func (g *Generator) SetBasePath(basePath string) {
+	g.api.BasePath = basePath
+}
+
 // SetInfo uses the given OpenAPI info for the
 // current specification.
 func (g *Generator) SetInfo(info *Info) {
@@ -1255,7 +1261,7 @@ func fieldNameFromTag(sf reflect.StructField, tagName string) string {
 	return name
 }
 
-/// parseExampleValue is used to transform the string representation of the example value to the correct type.
+// / parseExampleValue is used to transform the string representation of the example value to the correct type.
 func parseExampleValue(t reflect.Type, value string) (interface{}, error) {
 	// If the type implements Exampler use the ParseExample method to create the example
 	i, ok := reflect.New(t).Interface().(Exampler)
