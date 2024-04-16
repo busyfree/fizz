@@ -78,6 +78,12 @@ func NewGenerator(conf *SpecGenConfig) (*Generator, error) {
 	}, nil
 }
 
+// SetBasePath uses the given OpenAPI basePath for the
+// current specification.
+func (g *Generator) SetBasePath(basePath string) {
+	g.api.BasePath = basePath
+}
+
 // SpecGenConfig represents the configuration
 // of the spec generator.
 type SpecGenConfig struct {
