@@ -4,7 +4,7 @@
 
 This repository is a fork of [wl2L/fizz](https://github.com/wI2L/fizz) which contain additional capabilities.
 
-It's also based on my [Tonic](https://github.com/mcorbin/gadgeto/) fork which contain several improvements.
+It's also based on my [Tonic](https://github.com/loopfz/gadgeto/) fork which contain several improvements.
 
 ## README
 

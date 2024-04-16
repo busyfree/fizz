@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/mcorbin/gadgeto/tonic"
+	"github.com/loopfz/gadgeto/tonic"
 	"github.com/stretchr/testify/assert"
 )
 
