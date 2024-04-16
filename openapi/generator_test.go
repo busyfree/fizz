@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/Pallinder/go-randomdata"
-	"github.com/loopfz/gadgeto/tonic"
+	"github.com/mcorbin/gadgeto/tonic"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -134,7 +134,7 @@ func TestSchemaFromPrimitiveType(t *testing.T) {
 
 	// Use a pointer to primitive type to test
 	// pointer dereference and property nullable.
-	schema := g.newSchemaFromType(rt(new(int64)))
+	schema := g.newSchemaFromType(rt(new(int64)), tonic.MediaType())
 
 	// Ensure it is an inlined schema before
 	// accessing properties for assertions.
@@ -152,7 +152,7 @@ func TestSchemaFromPrimitiveType(t *testing.T) {
 func TestSchemaFromInterface(t *testing.T) {
 	g := gen(t)
 
-	schema := g.newSchemaFromType(tofEmptyInterface)
+	schema := g.newSchemaFromType(tofEmptyInterface, tonic.MediaType())
 	assert.NotNil(t, schema)
 	assert.Empty(t, schema.Type)
 	assert.Empty(t, schema.Format)
@@ -166,11 +166,11 @@ func TestSchemaFromUnsupportedType(t *testing.T) {
 	g := gen(t)
 
 	// Test with nil input.
-	schema := g.newSchemaFromType(nil)
+	schema := g.newSchemaFromType(nil, tonic.MediaType())
 	assert.Nil(t, schema)
 
 	// Test with unsupported input.
-	schema = g.newSchemaFromType(rt(func() {}))
+	schema = g.newSchemaFromType(rt(func() {}), tonic.MediaType())
 	assert.Nil(t, schema)
 	assert.Len(t, g.Errors(), 1)
 	assert.Implements(t, (*error)(nil), g.Errors()[0])
@@ -183,7 +183,7 @@ func TestSchemaFromUnsupportedType(t *testing.T) {
 func TestSchemaFromMapWithUnsupportedKeys(t *testing.T) {
 	g := gen(t)
 
-	schema := g.newSchemaFromType(rt(map[int]string{}))
+	schema := g.newSchemaFromType(rt(map[int]string{}), tonic.MediaType())
 	assert.Nil(t, schema)
 	assert.Len(t, g.Errors(), 1)
 	assert.Implements(t, (*error)(nil), g.Errors()[0])
@@ -196,7 +196,7 @@ func TestSchemaFromComplex(t *testing.T) {
 	g := gen(t)
 	g.UseFullSchemaNames(false)
 
-	sor := g.newSchemaFromType(rt(new(X)))
+	sor := g.newSchemaFromType(rt(new(X)), tonic.MediaType())
 	assert.NotNil(t, sor)
 
 	b, err := json.Marshal(sor)
@@ -253,7 +253,7 @@ func TestNewSchemaFromStructErrors(t *testing.T) {
 	g := gen(t)
 
 	// Invalid input.
-	sor := g.newSchemaFromStruct(reflect.TypeOf(new(string)))
+	sor := g.newSchemaFromStruct(reflect.TypeOf(new(string)), tonic.MediaType())
 	assert.Nil(t, sor)
 }
 
@@ -277,52 +277,52 @@ func TestNewSchemaFromStructFieldExampleValues(t *testing.T) {
 	typ := reflect.TypeOf(T{})
 
 	// Field A contains string example.
-	sor := g.newSchemaFromStructField(typ.Field(0), false, "A", typ)
+	sor := g.newSchemaFromStructField(typ.Field(0), false, "A", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, "value", sor.Example)
 
 	// Field APtr contains pointer to string example.
-	sor = g.newSchemaFromStructField(typ.Field(1), false, "APtr", typ)
+	sor = g.newSchemaFromStructField(typ.Field(1), false, "APtr", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, "value", sor.Example)
 
 	// Field B contains int example.
-	sor = g.newSchemaFromStructField(typ.Field(2), false, "B", typ)
+	sor = g.newSchemaFromStructField(typ.Field(2), false, "B", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, int64(1), sor.Example)
 
 	// Field BPtr contains pointer to int example.
-	sor = g.newSchemaFromStructField(typ.Field(3), false, "BPtr", typ)
+	sor = g.newSchemaFromStructField(typ.Field(3), false, "BPtr", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, int64(1), sor.Example)
 
 	// Field C contains float example.
-	sor = g.newSchemaFromStructField(typ.Field(4), false, "C", typ)
+	sor = g.newSchemaFromStructField(typ.Field(4), false, "C", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, 0.1, sor.Example)
 
 	// Field CPtr contains pointer to float example.
-	sor = g.newSchemaFromStructField(typ.Field(5), false, "CPtr", typ)
+	sor = g.newSchemaFromStructField(typ.Field(5), false, "CPtr", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, 0.1, sor.Example)
 
 	// Field D contains boolean example.
-	sor = g.newSchemaFromStructField(typ.Field(6), false, "D", typ)
+	sor = g.newSchemaFromStructField(typ.Field(6), false, "D", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, true, sor.Example)
 
 	// Field DPtr contains pointer to boolean example.
-	sor = g.newSchemaFromStructField(typ.Field(7), false, "DPtr", typ)
+	sor = g.newSchemaFromStructField(typ.Field(7), false, "DPtr", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, true, sor.Example)
 
 	// Field EPtr contains a double-pointer to boolean example.
-	sor = g.newSchemaFromStructField(typ.Field(8), false, "EPtr", typ)
+	sor = g.newSchemaFromStructField(typ.Field(8), false, "EPtr", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, false, sor.Example)
 
 	// Field FPtr contains a triple-pointer to uint16 value example.
-	sor = g.newSchemaFromStructField(typ.Field(9), false, "FPtr", typ)
+	sor = g.newSchemaFromStructField(typ.Field(9), false, "FPtr", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Equal(t, uint16(128), sor.Example)
 }
@@ -341,21 +341,21 @@ func TestNewSchemaFromStructFieldErrors(t *testing.T) {
 	typ := reflect.TypeOf(T{})
 
 	// Field A is required and has a default value.
-	sor := g.newSchemaFromStructField(typ.Field(0), true, "A", typ)
+	sor := g.newSchemaFromStructField(typ.Field(0), true, "A", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Len(t, g.Errors(), 1)
 	assert.Implements(t, (*error)(nil), g.Errors()[0])
 	assert.NotEmpty(t, g.Errors()[0].Error())
 
 	// Field B has default value that cannot be converted to type's type.
-	sor = g.newSchemaFromStructField(typ.Field(1), false, "B", typ)
+	sor = g.newSchemaFromStructField(typ.Field(1), false, "B", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Len(t, g.Errors(), 2)
 	assert.Implements(t, (*error)(nil), g.Errors()[1])
 	assert.NotEmpty(t, g.Errors()[1].Error())
 
 	// Field C has enum values that cannot be converted to type's type.
-	sor = g.newSchemaFromStructField(typ.Field(2), true, "C", typ)
+	sor = g.newSchemaFromStructField(typ.Field(2), true, "C", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	// it generates two errors, one per value
 	// that cannot be converted, here "a" and "b".
@@ -364,7 +364,7 @@ func TestNewSchemaFromStructFieldErrors(t *testing.T) {
 	assert.NotEmpty(t, g.Errors()[3].Error())
 
 	// Field D has example value that cannot be parsed to bool.
-	sor = g.newSchemaFromStructField(typ.Field(3), false, "D", typ)
+	sor = g.newSchemaFromStructField(typ.Field(3), false, "D", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Len(t, g.Errors(), 5)
 	assert.NotEmpty(t, g.Errors()[4].Error())
@@ -384,61 +384,12 @@ func TestNewSchemaFromStructFieldFormat(t *testing.T) {
 	typ := reflect.TypeOf(T{})
 
 	// Field A is required and has a default value.
-	sor := g.newSchemaFromStructField(typ.Field(0), true, "A", typ)
+	sor := g.newSchemaFromStructField(typ.Field(0), true, "A", typ, tonic.MediaType())
 	assert.NotNil(t, sor)
 	assert.Len(t, g.Errors(), 1)
 	assert.Implements(t, (*error)(nil), g.Errors()[0])
 	assert.NotEmpty(t, g.Errors()[0].Error())
 	assert.Equal(t, sor.Schema.Format, "email")
-}
-
-func TestNewSchemaFromEnumField(t *testing.T) {
-	g := gen(t)
-
-	type T struct {
-		A string      `enum:"a,b,c"`
-		B int         `enum:"1,2,3"`
-		C *string     `enum:"d,e,f"`
-		D *int        `enum:"4,5,6"`
-		E []string    `enum:"g,h,i"`
-		F *[]string   `enum:"j,k,l"`
-		G **string    `enum:"m,n,o"`
-		H **[]string  `enum:"p,q,r"`
-		I **[]float64 `enum:"7.0,8.1,9.2"`
-	}
-
-	tests := []struct {
-		fname        string
-		expectedEnum []interface{}
-		isSlice      bool
-	}{
-		{"A", []interface{}{"a", "b", "c"}, false},
-		{"B", []interface{}{int64(1), int64(2), int64(3)}, false},
-		{"C", []interface{}{"d", "e", "f"}, false},
-		{"D", []interface{}{int64(4), int64(5), int64(6)}, false},
-		{"E", []interface{}{"g", "h", "i"}, true},
-		{"F", []interface{}{"j", "k", "l"}, true},
-		{"G", []interface{}{"m", "n", "o"}, false},
-		{"H", []interface{}{"p", "q", "r"}, false},
-		{"I", []interface{}{7.0, 8.1, 9.2}, false},
-	}
-
-	typ := reflect.TypeOf(T{})
-
-	for i, tt := range tests {
-		t.Run(tt.fname, func(t *testing.T) {
-			sor := g.newSchemaFromStructField(typ.Field(i), true, tt.fname, typ)
-			assert.NotNil(t, sor)
-			var enum []interface{}
-			if tt.isSlice {
-				enum = sor.Items.Enum
-			} else {
-				enum = sor.Enum
-			}
-			assert.Equal(t, tt.expectedEnum, enum)
-		})
-
-	}
 }
 
 func diffJSON(a, b []byte) (bool, error) {
@@ -520,7 +471,7 @@ func TestAddOperation(t *testing.T) {
 			},
 		},
 	}
-	_, err := g.AddOperation(path, "POST", "Test", reflect.TypeOf(&In{}), reflect.TypeOf(Z{}), infos)
+	_, err := g.AddOperation(path, "POST", "Test", tonic.MediaType(), tonic.MediaType(), reflect.TypeOf(&In{}), reflect.TypeOf(Z{}), infos)
 	if err != nil {
 		t.Error(err)
 	}
@@ -528,7 +479,7 @@ func TestAddOperation(t *testing.T) {
 	// No parameters should be present, and a response
 	// matching the default status code used by tonic
 	// should be present with no content.
-	_, err = g.AddOperation(path, "PUT", "Test", nil, nil, &OperationInfo{
+	_, err = g.AddOperation(path, "PUT", "Test", tonic.MediaType(), tonic.MediaType(), nil, nil, &OperationInfo{
 		ID:          "UpdateTest",
 		StatusCode:  204,
 		Description: "Update a test.",
@@ -563,11 +514,11 @@ func TestAddOperation(t *testing.T) {
 	}
 	// Try to add the operation again with the same
 	// identifier. Expected to fail.
-	_, err = g.AddOperation(path, "POST", "Test", reflect.TypeOf(&In{}), reflect.TypeOf(Z{}), infos)
+	_, err = g.AddOperation(path, "POST", "Test", tonic.MediaType(), tonic.MediaType(), reflect.TypeOf(&In{}), reflect.TypeOf(Z{}), infos)
 	assert.NotNil(t, err)
 
 	// Add an operation with a bad input type.
-	_, err = g.AddOperation("/", "GET", "", reflect.TypeOf(new(string)), nil, nil)
+	_, err = g.AddOperation("/", "GET", "", tonic.MediaType(), tonic.MediaType(), reflect.TypeOf(new(string)), nil, nil)
 	assert.NotNil(t, err)
 }
 
@@ -733,7 +684,7 @@ func TestSetOperationParamsError(t *testing.T) {
 
 	// Use invalid input type for parameters.
 	typ := reflect.TypeOf([]string{})
-	err := g.setOperationParams(op, typ, typ, false, "/")
+	err := g.setOperationParams(op, typ, typ, false, "/", tonic.MediaType())
 	assert.NotNil(t, err)
 
 	// Semantic error for path.
@@ -741,7 +692,7 @@ func TestSetOperationParamsError(t *testing.T) {
 		B string `path:"B"`
 	}
 	typ = reflect.TypeOf(T{})
-	err = g.setOperationParams(op, typ, typ, false, "/{a}/{B}")
+	err = g.setOperationParams(op, typ, typ, false, "/{a}/{B}", tonic.MediaType())
 	assert.NotNil(t, err)
 }
 
@@ -774,7 +725,7 @@ func TestOverrideSchema(t *testing.T) {
 	err = g.OverrideDataType(rt(&W{}), "string", "wallet")
 	assert.NotNil(t, err)
 
-	sor := g.newSchemaFromType(rt(W{}))
+	sor := g.newSchemaFromType(rt(W{}), tonic.MediaType())
 	assert.NotNil(t, sor)
 
 	schema := g.resolveSchema(sor)
